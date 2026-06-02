@@ -5,40 +5,43 @@ namespace EspacioCalculadora
     public class Calculadora
     {
         private double dato;
-        double Resultado
+        public double Resultado
         {
             get {return dato;}
+            set {dato = value;}
         }
 
-        void Set (double valor)
-        {
-            dato = valor;
-        }
-        void Sumar(double termino)
+        public double Sumar(double termino)
         {
             dato += termino;
+            return dato;
         }
-        void Restar(double termino)
+        public double Restar(double termino)
         {
             dato -= termino;
+            return dato;
         }
-        void Multiplicar(double termino)
+        public double Multiplicar(double termino)
         {
             dato *= termino;
+            return dato;
         }
-        void Dividir(double termino)
+        public double Dividir(double termino)
         {
             if(termino > 0)
             {
                 dato /= termino;
+                return dato;
             } else
             {
                 Console.WriteLine("No se puede dividir en 0.");
+                return 0;
             }
         }
-        void Limpiar()
+        public void Limpiar()
         {
             dato = 0;
+            Resultado = 0;
         }
     }
 }
