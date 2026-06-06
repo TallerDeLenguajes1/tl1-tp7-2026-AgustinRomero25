@@ -1,204 +1,176 @@
 ﻿using System.Globalization;
-using System.Runtime.Serialization.Formatters;
 using EspacioCalculos;
 
 Console.WriteLine("------------------------------- Sistema Personal para Empleados ---------------------------");
+
 string s1;
 bool SecCheck;
-double antiguedad;
-int edad;
-int faltaParaJubilarseAños;
-bool esJubilado;
-double sueldoBasico = 0;
-string estadoCivil;
-string cargo;
-char estadoCivilMinus;
-double adicional = 0;
-double aumentadorPorAntiguedad = 0;
-double salario = sueldoBasico;
-double totalSalarios = 0;
-int edadAnt = 0;
-int proximoAJubilarse;
 
-empleados[] empleados = null;
-empleados proximoAJubilarse = null;
+double sueldoBasico;
+string cargo;
+string estadoCivil;
+char estadoCivilMinus;
+
+DateTime fechaAux;
+
+double totalSalarios = 0;
+
+Empleado[] empleados = new Empleado[3];
+Empleado proximoAJubilarse = null;
 
 for(int j = 0; j < 3; j++)
-{   
-    empleados[j] = new Empleado[];
+{
+    empleados[j] = new Empleado();
+
+    Console.WriteLine($"========== EMPLEADO {j + 1} ==========");
+
     Console.WriteLine("Ingrese el nombre del empleado:");
-    empleados[j].Nombre = Console.ReadLine();
+    empleados[j].IngresaNombre = Console.ReadLine();
 
     Console.WriteLine("Ingrese el apellido del empleado:");
-    empleados[j].Apellido = Console.ReadLine();
+    empleados[j].IngresaApellido = Console.ReadLine();
 
     do
     {
         Console.WriteLine("Ingrese la fecha de nacimiento (dd/MM/yyyy):");
         s1 = Console.ReadLine();
-        SecCheck = DateTime.TryParse(s1, out empleados[j].FecNac);
-        if (!SecCheck)
+
+        SecCheck = DateTime.TryParse(s1, out fechaAux);
+
+        if(!SecCheck)
         {
             Console.WriteLine("Fecha inválida.");
         }
-    } while (!SecCheck);
+        else
+        {
+            empleados[j].IngresaFecNac = fechaAux;
+        }
+
+    } while(!SecCheck);
 
     do
     {
-        Console.WriteLine("Ingrese la fecha de ingreso del empleado (dd/MM/yyyy):");
+        Console.WriteLine("Ingrese la fecha de ingreso (dd/MM/yyyy):");
         s1 = Console.ReadLine();
-        SecCheck = DateTime.TryParse(s1, out empleados[j].FechaIngreso);
-        if (!SecCheck)
+
+        SecCheck = DateTime.TryParse(s1, out fechaAux);
+
+        if(!SecCheck)
         {
             Console.WriteLine("Fecha inválida.");
         }
-    } while (!SecCheck);
+        else
+        {
+            empleados[j].IngresaFechaIngreso = fechaAux;
+        }
+
+    } while(!SecCheck);
 
     do
     {
-        Console.WriteLine("Ahora ingrese la edad del empleado:");
+        Console.WriteLine("Ingrese el sueldo básico:");
         s1 = Console.ReadLine();
-        SecCheck = int.TryParse(s1, CultureInfo.InvariantCulture, out edad);
+
+        SecCheck = double.TryParse(
+            s1,
+            CultureInfo.InvariantCulture,
+            out sueldoBasico);
+
         if(!SecCheck)
         {
-            Console.WriteLine("Error. Numero invalido.");
+            Console.WriteLine("Número inválido.");
         }
-    } while (!SecCheck && edad > 0);
 
-    if (edad > edadAnt && edad < 65)
-    {
-        proximoAJubilarse = empleados[j];
-    }
+    } while(!SecCheck);
+
+    empleados[j].IngresaSueldoBasico = sueldoBasico;
 
     do
     {
-        Console.WriteLine("Ahora ingrese cuanto tiempo falta para que el empleado se jubile:");
-        s1 = Console.ReadLine();
-        SecCheck = int.TryParse(s1, CultureInfo.InvariantCulture, out faltaParaJubilarseAños);
-        if(!SecCheck)
-        {
-            Console.WriteLine("Error. Numero invalido.");
-        }
-    } while (!SecCheck && edad >= 0);
+        Console.WriteLine("Ingrese el cargo:");
+        Console.WriteLine("Auxiliar");
+        Console.WriteLine("Administrativo");
+        Console.WriteLine("Ingeniero");
+        Console.WriteLine("Especialista");
+        Console.WriteLine("Investigador");
 
-    if (edad > 64 && faltaParaJubilarseAños == 0)
-    {
-        esJubilado = true;
-    } else {esJubilado = false;}
-
-    antiguedad = DateTime.Today.Year - empleados[j].FechaIngreso.Year;
-    
-    do
-    {
-        Console.WriteLine("Ingrese el sueldo basico del empleado:");
-        s1 = Console.ReadLine();
-        SecCheck = double.TryParse(s1, CultureInfo.InvariantCulture, out sueldoBasico);
-        if(!SecCheck)
-        {
-            Console.WriteLine("Error. Numero invalido.");
-        }
-    } while (!SecCheck);
-
-    do
-    {
-        Console.WriteLine("Ingrese el cargo del empleado (Palabra completa y primera letra con mayuscula):");
         cargo = Console.ReadLine();
-    } while(cargo != "Auxiliar" && cargo != "Ingeniero" && cargo != "Administrativo" && cargo != "Especialista" && cargo != "Investigador");
 
-    for(int z = 0; z < 5; z++)
-    {
-        if(cargo == empleados[j].Cargo[z])
-        {
-            empleados[j].Cargo[z] = cargo;
-        }
-    }
+    } while(cargo != "Auxiliar" &&
+            cargo != "Administrativo" &&
+            cargo != "Ingeniero" &&
+            cargo != "Especialista" &&
+            cargo != "Investigador");
 
-    do
-    {
-        Console.WriteLine("Ahora ingrese cuanto tiempo falta para que el empleado se jubile (si ya esta jubilado ingrese 0):");
-        s1 = Console.ReadLine();
-        SecCheck = int.TryParse(s1, CultureInfo.InvariantCulture, out faltaParaJubilarseAños);
-        if(!SecCheck)
-        {
-            Console.WriteLine("Error. Numero invalido.");
-        }
-    } while (!SecCheck || faltaParaJubilarseAños < 0);
+    empleados[j].IngresaCargo =
+        Enum.Parse<Empleado.Cargos>(cargo);
 
     do
     {
-        Console.WriteLine("Ingrese el estado civil del empleado \n(c) Casado\n(s) Soltero\n(v) Viudo:");
-        s1 = Console.ReadLine();
-        estadoCivil = s1.ToLower();
-        SecCheck = char.TryParse(estadoCivil, out estadoCivilMinus);
-        if (!SecCheck || (estadoCivilMinus != 'c' && estadoCivilMinus != 's' && estadoCivilMinus != 'v'))
+        Console.WriteLine("Ingrese el estado civil:");
+        Console.WriteLine("(c) Casado");
+        Console.WriteLine("(s) Soltero");
+        Console.WriteLine("(v) Viudo");
+
+        estadoCivil = Console.ReadLine().ToLower();
+
+        SecCheck = char.TryParse(
+            estadoCivil,
+            out estadoCivilMinus);
+
+        if(!SecCheck ||
+            (estadoCivilMinus != 'c' &&
+            estadoCivilMinus != 's' &&
+            estadoCivilMinus != 'v'))
         {
-            Console.WriteLine("Error. Opción inválida.");
+            Console.WriteLine("Opción inválida.");
         }
-    } while (!SecCheck || (estadoCivilMinus != 'c' && estadoCivilMinus != 's' && estadoCivilMinus != 'v'));
+
+    } while(!SecCheck ||
+            (estadoCivilMinus != 'c' &&
+            estadoCivilMinus != 's' &&
+            estadoCivilMinus != 'v'));
 
     switch(estadoCivilMinus)
     {
         case 'c':
-            empleados[j].EstCivil = 'C';
-        break;
+            empleados[j].IngresaEstCivil = 'C';
+            break;
 
         case 's':
-            empleados[j].EstCivil = 'S';
-        break;
+            empleados[j].IngresaEstCivil = 'S';
+            break;
 
         case 'v':
-            empleados[j].EstCivil = 'V';
-        break;
+            empleados[j].IngresaEstCivil = 'V';
+            break;
     }
 
-    if(antiguedad > 0 && antiguedad <= 20)
-    {
-        for(int i = 0; i < antiguedad; i++)
-        {
-            aumentadorPorAntiguedad += 0.01;
-        }
-    } else if (antiguedad > 20)
-    {
-        aumentadorPorAntiguedad = 0.25;
-    }
-    adicional = sueldoBasico * aumentadorPorAntiguedad;
+    totalSalarios += empleados[j].Salario;
 
-    if(cargo == "Ingeniero" || cargo == "Especialista")
+    if(proximoAJubilarse == null ||
+        empleados[j].AniosParaJubilarse <
+        proximoAJubilarse.AniosParaJubilarse)
     {
-        adicional *= 1.5;
+        proximoAJubilarse = empleados[j];
     }
 
-    if(estadoCivilMinus == 'c')
-    {
-        adicional += 150000;
-    }
-
-    edadAnt = edad;
-
-    empleados[j].SueldoBasico = sueldoBasico;
-
-    salario = sueldoBasico + adicional;
-
-    if(esJubilado)
-    {
-        salario -= salario * 0.3;
-    }
-
-    totalSalarios += salario;
-    
-    salario = 0;
-    adicional = 0;
-    aumentadorPorAntiguedad = 0;
-
-    Console.WriteLine("--------------------------------------------------------------------------");
-    Console.WriteLine($"Empleado {j}: {empleados[j].Nombre} {empleados[j].Apellido}");
-    Console.WriteLine($"Antiguedad: {antiguedad} años.");
-    Console.WriteLine($"Edad: {edad} años:");
-    Console.WriteLine($"Le faltan para jubilarse: {faltaParaJubilarseAños} años.");
+    Console.WriteLine("----------------------------------------");
+    Console.WriteLine($"Empleado: {empleados[j].IngresaNombre} {empleados[j].IngresaApellido}");
+    Console.WriteLine($"Edad: {empleados[j].Edad}");
+    Console.WriteLine($"Antigüedad: {empleados[j].Antiguedad}");
+    Console.WriteLine($"Años para jubilarse: {empleados[j].AniosParaJubilarse}");
+    Console.WriteLine($"Salario: ${empleados[j].Salario}");
+    Console.WriteLine();
 }
 
+Console.WriteLine("========================================");
+Console.WriteLine($"Monto total pagado en salarios: ${totalSalarios}");
+Console.WriteLine();
 
-Console.WriteLine("Datos del proximo a jubilarse: ");
-
-
-
+Console.WriteLine("Empleado más próximo a jubilarse:");
+Console.WriteLine($"{proximoAJubilarse.IngresaNombre} {proximoAJubilarse.IngresaApellido}");
+Console.WriteLine($"Edad: {proximoAJubilarse.Edad}");
+Console.WriteLine($"Antigüedad: {proximoAJubilarse.Antiguedad}");
+Console.WriteLine($"Años para jubilarse: {proximoAJubilarse.AniosParaJubilarse}");
+Console.WriteLine($"Salario: ${proximoAJubilarse.Salario}");
